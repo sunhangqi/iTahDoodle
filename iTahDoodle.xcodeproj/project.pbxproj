@@ -102,6 +102,7 @@
 		BFB15C662505997300F34262 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				CLASSPREFIX = HQ;
 				LastUpgradeCheck = 1160;
 				ORGANIZATIONNAME = one;
 				TargetAttributes = {

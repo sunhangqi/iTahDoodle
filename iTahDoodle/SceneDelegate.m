@@ -16,17 +16,21 @@
 
 
 - (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions {
-    CGRect winFrame = [[UIScreen mainScreen] bounds];
-    UIWindow * theWindow = [[UIWindow alloc] initWithFrame:winFrame];
-    self.window = theWindow;
+    UIWindowScene * windowScene = (UIWindowScene *)scene;
+    self.window = [[UIWindow alloc] initWithWindowScene:windowScene];
+    self.window.frame = windowScene.coordinateSpace.bounds;
     
-    CGRect tableFrame = CGRectMake(0, 80, winFrame.size.width, winFrame.size.height - 100);
+    
+    CGRect tableFrame = CGRectMake(0, 80, self.window.frame.size.width, self.window.frame.size.height - 100);
     CGRect fieldFrame = CGRectMake(20, 40, 200, 31);
     CGRect buttonFrame = CGRectMake(228, 40, 72, 31);
+    
+    self.tasks = [NSMutableArray array];
     
     
     self.taskTable = [[UITableView alloc] initWithFrame:tableFrame style:UITableViewStylePlain];
     self.taskTable.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.taskTable.dataSource = self;
     [self.taskTable registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
     
     self.taskField = [[UITextField alloc] initWithFrame:fieldFrame];
@@ -37,12 +41,14 @@
     self.insertButton.frame = buttonFrame;
     
     [self.insertButton setTitle:@"Insert" forState:UIControlStateNormal];
+    [self.insertButton addTarget:self action:@selector(addTasks:) forControlEvents:UIControlEventTouchUpInside];
     
     [self.window addSubview:self.taskTable];
     [self.window addSubview:self.taskField];
     [self.window addSubview:self.insertButton];
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
+    
     
 }
 
@@ -79,5 +85,32 @@
     // to restore the scene back to its current state.
 }
 
+#pragma mark - Actions
+- (void)addTasks:(id)sender
+{
+    NSString *text = [self.taskField text];
+    
+    if([text length] == 0){
+        return;
+    }
+    //NSLog(@"Task entered: %@", text);
+    [self.tasks addObject:text];
+    [self.taskTable reloadData];
+    [self.taskField setText:@""];
+    [self.taskField resignFirstResponder];
+}
 
+#pragma mark - 管理表格视图
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return [self.tasks count];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *c = [self.taskTable dequeueReusableCellWithIdentifier:@"Cell"];
+    NSString *item = [self.tasks objectAtIndex:indexPath.row];
+    c.textLabel.text = item;
+    return c;
+}
 @end

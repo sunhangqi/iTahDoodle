@@ -8,7 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-@interface SceneDelegate : UIResponder <UIWindowSceneDelegate>
+//声明辅助函数， 该函数会返回特定文件的路径，用于保存用户的任务列表信息
+NSString *docPath(void);
+
+@interface SceneDelegate : UIResponder <UIWindowSceneDelegate, UITableViewDataSource>
 
 @property (strong, nonatomic) UIWindow * window;
 
